@@ -140,3 +140,6 @@ plt.figure(figsize=(10,7))
 plt.plot(record)
 plt.xlabel('step')
 plt.ylabel('error rate')
+
+#保存模型
+torch.save(net,'minst_conv_checkpoint')
