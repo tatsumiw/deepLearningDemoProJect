@@ -139,7 +139,7 @@ net = Transfer() #构造网络
 net.set_filter_values(original_net) #数据迁移
 criterion = nn.MSELoss()
 optimizer = optim.SGD(net.parameters(),lr=0.0001,momentum=0.9) #加载参数至优化器中
-
+ 
 #测试与训练
 records = []
 for epoch in range(num_epochs):
