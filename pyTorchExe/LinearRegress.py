@@ -1,13 +1,14 @@
 import torch
-from IPython import display
-from matplotlib import pyplot as plt
 import numpy as np
-import random
 import torch.utils.data as Data
 import torch.nn as nn
-from  torch.nn import init
+from torch.nn import init
 import torch.optim as optim
 
+
+"""
+    使用Pytorch实现简单线性回归模型
+"""
 
 #线性回归实现
 #生成数据集
