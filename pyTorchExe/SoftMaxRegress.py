@@ -43,6 +43,7 @@ test_iter = torch.utils.data.DataLoader(mnist_test,batch_size=batch_size,shuffle
 
 #模型定义
 num_inputs = feature.shape[1] * feature.shape[2] #输入神经元数量为样本的W*H
+num_hiddens1, num_hiddens2 =  256, 256           #中间层神经元个数
 num_outputs = 10                                 #输出神经元数量为10
 
 #展开层(将图像H*W压缩至1维)
@@ -52,15 +53,20 @@ class FlattenLayer(nn.Module):
     def forward(self,x):   #shape: (batch, 1, 28, 28)
         return x.view(x.shape[0],-1) #展开成 shape(batch,1*28*28)
 #模型组合
+drop_prob1, drop_prob2 = 0.2, 0.5 #设置dropout接近输入层的丢弃概率稍小
 net = nn.Sequential(
-    OrderedDict([
-        ('flatten', FlattenLayer()),
-        ('linear', nn.Linear(num_inputs, num_outputs))
-    ])
+    FlattenLayer(),
+    nn.Linear(num_inputs,num_hiddens1),
+    nn.ReLU(),
+    nn.Dropout(drop_prob1),
+    nn.Linear(num_hiddens1,num_hiddens2),
+    nn.ReLU(),
+    nn.Dropout(drop_prob2),
+    nn.Linear(num_hiddens2, num_outputs)
 )
 #初始化参数
-init.normal_(net.linear.weight,mean=0,std=0.01)
-init.constant_(net.linear.bias,val=0)
+for params in net.parameters():
+    init.normal_(params,mean=0,std=0.01)
 lossfc = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(net.parameters(),lr=0.1)
 
