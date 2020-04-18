@@ -72,32 +72,28 @@ for epoch in range(num_epoches):
         num_correct = (pred==label).sum().item() #pred和label都是batch*1的tensor
         acc = num_correct/img.shape[0]
         train_acc += acc
-
-        break
     losses.append(train_loss/len(train_loader))
     acces.append(train_acc/len(train_loader))
 
-    # #预测模式
-    # eval_loss = 0
-    # eval_acc = 0
-    # model.eval()
-    # for img,label in test_loader:
-    #     img = img.view(img.shape[0],-1)
-    #     out = model(img)
-    #     loss = criterion(out,label)
-    #     #记录误差
-    #     eval_loss += loss.item()
-    #     #记录准确率
-    #     _,pred = out.max(1)
-    #     num_correct = (pred==label).sum().item()
-    #     acc = num_correct/img.shape[0]
-    #     eval_acc += acc
-    # eval_losses.append(eval_loss/len(test_loader))
-    # eval_acces.append(eval_acc/len(test_loader))
+    #预测模式
+    eval_loss = 0
+    eval_acc = 0
+    model.eval()
+    for img,label in test_loader:
+        img = img.view(img.shape[0],-1)
+        out = model(img)
+        loss = criterion(out,label)
+        #记录误差
+        eval_loss += loss.item()
+        #记录准确率
+        _,pred = out.max(1)
+        num_correct = (pred==label).sum().item()
+        acc = num_correct/img.shape[0]
+        eval_acc += acc
+    eval_losses.append(eval_loss/len(test_loader))
+    eval_acces.append(eval_acc/len(test_loader))
 
     #整体结果输出
     print('epoch:{},TrainLoss:{:.4f},TrainAcc:{:.4f},TestLoss:{:.4f},TestAcc:{:.4f}'.format(
         epoch,train_loss/len(train_loader),train_acc/len(train_loader),eval_loss/len(test_loader),eval_acc/len(test_loader)
     ))
-
-    break
