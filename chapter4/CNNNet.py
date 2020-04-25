@@ -34,19 +34,20 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 class CNNNet(nn.Module):
     def __init__(self):
         super(CNNNet, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=5, stride=1)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=5)
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.conv2 = nn.Conv2d(in_channels=16, out_channels=36, kernel_size=3, stride=1)
+        self.conv2 = nn.Conv2d(in_channels=16, out_channels=36, kernel_size=5)
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.fc1 = nn.Linear(1296, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.aap = nn.AdaptiveAvgPool2d(1) #使用全局池化层
+        self.fc3 = nn.Linear(36, 10)
 
     def forward(self, x):
         x = self.pool1(F.relu(self.conv1(x)))
         x = self.pool2(F.relu(self.conv2(x)))
         # print(x.shape) x.shape = 4*36*6*6
-        x = x.view(-1, 36 * 6 * 6)
-        x = F.relu(self.fc2(F.relu(self.fc1(x))))
+        x = self.aap(x)
+        x = x.view(x.shape[0],-1)
+        x = self.fc3(x)
         return x
 
 
@@ -95,4 +96,4 @@ with torch.no_grad():
         _,predicted = torch.max(outputs.data,1)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
-print('Accuracy of thr network on the 10000 test images: %d %%' %(100*correct/total))
+print('Accuracy of thr network on the 10000 test images: %d %%' %(100*correct/total)) #测试集下总体效果
